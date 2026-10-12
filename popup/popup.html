@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <h1 class="popup-title">DeepSeek Enhancer</h1>
+    <p class="popup-desc">将 AI 输出转化为可交互 UI</p>
+
+    <div class="toggle-row">
+      <span>插件开关</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-enabled">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span>新聊天自动注入提示词</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-prompt">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="prompt-section" id="prompt-section">
+      <label class="prompt-label" for="prompt-text">提示词内容</label>
+      <textarea id="prompt-text" rows="6" placeholder="输入新聊天时自动注入的提示词..."></textarea>
+      <div class="prompt-actions">
+        <button id="save-prompt" class="btn-save">保存</button>
+        <button id="reset-prompt" class="btn-reset">恢复默认</button>
+      </div>
+    </div>
+
+    <div class="status" id="status">加载中...</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

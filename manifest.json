@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "DeepSeek Chat Enhancer",
+  "version": "0.1.0",
+  "description": "增强 DeepSeek 聊天界面，将 AI 输出转化为可交互 UI",
+
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "https://chat.deepseek.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://chat.deepseek.com/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "DeepSeek Chat Enhancer",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["content/content.css"],
+      "matches": ["https://chat.deepseek.com/*"]
+    }
+  ]
+}

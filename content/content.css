@@ -1,0 +1,122 @@
+.dse-interactive-wrapper {
+  all: initial;
+  display: block;
+}
+
+/* ===== 链接卡片（独立链接） ===== */
+
+.dse-link-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  margin: 8px 0 !important;
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 12px !important;
+  text-decoration: none !important;
+  transition: border-color .15s, background .15s, box-shadow .15s !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+  font-family: "DM Sans","Noto Sans SC",system-ui,sans-serif !important;
+}
+
+.dse-link-card:hover {
+  background: #222 !important;
+  border-color: #555 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3) !important;
+}
+
+.dse-link-favicon {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 6px !important;
+  flex-shrink: 0 !important;
+  background: #2a2a2a !important;
+  object-fit: contain !important;
+}
+
+.dse-link-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.dse-link-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #e0e0e0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.4 !important;
+}
+
+.dse-link-url {
+  font-size: 11px !important;
+  color: #666 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.3 !important;
+}
+
+.dse-link-arrow {
+  font-size: 18px !important;
+  color: #444 !important;
+  flex-shrink: 0 !important;
+  transition: color .15s !important;
+}
+
+.dse-link-card:hover .dse-link-arrow {
+  color: #888 !important;
+}
+
+.dse-link-card:hover .dse-link-title {
+  color: #fff !important;
+}
+
+/* ===== 行内链接小图标 ===== */
+
+.dse-link-ext {
+  display: inline-block !important;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: 3px !important;
+  vertical-align: middle !important;
+  opacity: .45 !important;
+  transition: opacity .15s !important;
+}
+
+a:hover .dse-link-ext {
+  opacity: .8 !important;
+}
+
+/* ===== 注入状态提示条 ===== */
+
+.dse-toast {
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(12px) !important;
+  background: #111 !important;
+  color: #bbb !important;
+  border: 1px solid #333 !important;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  font-size: 13px !important;
+  font-family: "Noto Sans SC",system-ui,sans-serif !important;
+  z-index: 999998 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5) !important;
+  opacity: 0 !important;
+  transition: opacity .3s, transform .3s !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+}
+
+.dse-toast.show {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+}

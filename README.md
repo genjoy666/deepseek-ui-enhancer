@@ -1,6 +1,6 @@
 # DeepSeek Enhancer
 
-参考chatGPT交互式，将 DeepSeek网页端的聊天输出转化为可交互的UI组件。
+参考chatGPT交互式UI，将 DeepSeek网页端的聊天输出转化为可交互的UI组件。
 
 ## 功能
 

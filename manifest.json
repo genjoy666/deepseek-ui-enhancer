@@ -39,12 +39,5 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png"
     }
-  },
-
-  "web_accessible_resources": [
-    {
-      "resources": ["content/content.css"],
-      "matches": ["https://chat.deepseek.com/*"]
-    }
-  ]
+  }
 }

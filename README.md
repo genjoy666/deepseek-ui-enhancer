@@ -18,31 +18,40 @@
 | **chart** | 柱状图/折线图，可切换，自动统计 |
 | **structure** | 可点击结构图，展示架构/流程 |
 
-**checklist**
+**checklist**:
+
 <img width="797" height="332" alt="image" src="https://github.com/user-attachments/assets/a0d08581-a2eb-44d8-825e-f1f9945101ba" />
 
-**form**
+**form**:
+
 <img width="806" height="602" alt="image" src="https://github.com/user-attachments/assets/6d7029ec-2ca7-407e-9dae-5de85bafdfe6" />
 
-**confirm**
+**confirm**:
+
 <img width="797" height="203" alt="image" src="https://github.com/user-attachments/assets/333a32c6-5a93-405f-9b4b-6d23c9c0d3d8" />
 
-**slider**
+**slider**:
+
 <img width="816" height="360" alt="image" src="https://github.com/user-attachments/assets/6caac1ff-a5cf-49bc-9242-300f1f2d210a" />
 
-**table**
+**table**:
+
 <img width="787" height="641" alt="image" src="https://github.com/user-attachments/assets/d5448acb-a313-4581-b596-327ba42660c7" />
 
-**buttons**
+**buttons**:
+
 <img width="782" height="282" alt="image" src="https://github.com/user-attachments/assets/b9949143-baa7-4d58-91c2-139c2897df38" />
 
-**text**
+**text**:
+
 <img width="791" height="430" alt="image" src="https://github.com/user-attachments/assets/75fea22d-0e14-4f72-b9d6-d15a22806557" />
 
-**chart**
+**chart**:
+
 <img width="797" height="647" alt="image" src="https://github.com/user-attachments/assets/9d3e4e8a-92dd-4d4f-a30e-61ce33daa315" />
 
-**structure**
+**structure**:
+
 <img width="907" height="603" alt="image" src="https://github.com/user-attachments/assets/2a1847e4-a27e-4fba-b323-651706df2000" />
 
 

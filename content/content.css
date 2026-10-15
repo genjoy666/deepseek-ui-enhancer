@@ -78,6 +78,50 @@
   color: #fff !important;
 }
 
+/* ===== 浅色模式 ===== */
+
+[data-dse-theme="light"] .dse-link-card {
+  background: #fff !important;
+  border-color: #e0e0e0 !important;
+}
+
+[data-dse-theme="light"] .dse-link-card:hover {
+  background: #f8f8f8 !important;
+  border-color: #ccc !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08) !important;
+}
+
+[data-dse-theme="light"] .dse-link-favicon {
+  background: #f0f0f0 !important;
+}
+
+[data-dse-theme="light"] .dse-link-title {
+  color: #1a1a1a !important;
+}
+
+[data-dse-theme="light"] .dse-link-card:hover .dse-link-title {
+  color: #000 !important;
+}
+
+[data-dse-theme="light"] .dse-link-url {
+  color: #999 !important;
+}
+
+[data-dse-theme="light"] .dse-link-arrow {
+  color: #bbb !important;
+}
+
+[data-dse-theme="light"] .dse-link-card:hover .dse-link-arrow {
+  color: #666 !important;
+}
+
+[data-dse-theme="light"] .dse-toast {
+  background: #fff !important;
+  color: #333 !important;
+  border-color: #e0e0e0 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.1) !important;
+}
+
 /* ===== 行内链接小图标 ===== */
 
 .dse-link-ext {
@@ -119,4 +163,48 @@ a:hover .dse-link-ext {
 .dse-toast.show {
   opacity: 1 !important;
   transform: translateX(-50%) translateY(0) !important;
+}
+
+/* ===== 系统指令折叠 ===== */
+
+.dse-prompt-collapse {
+  margin: 4px 0 8px !important;
+  border: 1px solid rgba(128,128,128,0.2) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  font-size: 13px !important;
+}
+
+.dse-prompt-summary {
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+  color: rgba(150,150,150,0.7) !important;
+  font-size: 12px !important;
+  user-select: none !important;
+  list-style: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.dse-prompt-summary::-webkit-details-marker {
+  display: none !important;
+}
+
+.dse-prompt-summary::before {
+  content: "▶" !important;
+  font-size: 9px !important;
+  transition: transform 0.15s !important;
+  display: inline-block !important;
+}
+
+.dse-prompt-collapse[open] > .dse-prompt-summary::before {
+  transform: rotate(90deg) !important;
+}
+
+.dse-prompt-content {
+  padding: 0 12px 8px !important;
+  opacity: 0.6 !important;
+  font-size: 12px !important;
+  border-top: 1px solid rgba(128,128,128,0.15) !important;
 }

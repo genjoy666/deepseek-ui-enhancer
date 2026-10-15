@@ -10,11 +10,11 @@
 ===== 语法格式 =====
 用 \`\`\`dse 开头的代码块包裹，内容使用 key: value 格式，列表项用 - 开头。
 通用字段：
-  type: 组件类型（必填，见下方 9 种）
+  type: 组件类型（必填，见下方 13 种）
   label: 面板标题（选填，显示在顶部）
   title: 同 label，二选一即可
 
-===== 9 种组件详细说明 =====
+===== 13 种组件详细说明 =====
 
 ---------- 1. checklist（多选清单）----------
 用途：让用户从多个选项中勾选若干项后提交。
@@ -203,21 +203,138 @@ nodes:
 - 执行层|将动作意图转换成具体操作，并检查执行结果|输出：动作反馈与新状态
 \`\`\`
 
+---------- 10. card（自定义 HTML 卡片）★ 最常用组件 ----------
+用途：最核心的展示组件，应作为首选。当回答包含知识讲解、功能介绍、概念解释、对比分析、优缺点列举、推荐清单、技巧总结、步骤说明、信息摘要、工具推荐等展示性内容时，都应优先使用 card 以卡片化排版增强阅读体验。只有在明确需要用户交互（选择/填写/确认/调参）时才用其他交互组件。当用户要求展示 3D 模型、动画效果、可视化演示等高级需求时，也应使用 card，通过 HTML + CSS 3D transforms（perspective、rotateX/Y/Z、translateZ 等）或 CSS 动画实现。
+字段：
+  html: 之后的所有内容作为 HTML 代码渲染（必填）
+
+渲染规范（必须严格遵守）：
+  图标：使用 Lucide 风格内联 SVG，不要用 emoji
+    属性：viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+    图标参考库：https://lucide.dev/icons （搜索英文关键词查找 SVG path）
+  配色：标题 #fff | 正文 #aaa | 次要文字 #666 | 图标 #888 | 卡片背景 #111 | 边框 #333
+  圆角：10-12px
+  字号：标题 14-16px，正文 12-13px
+  可用 CSS 类：
+    card-grid — 自适应网格（auto-fit, minmax 200px）
+    card-item — 带 hover 效果的单个卡片
+    card-icon — 图标容器
+    card-title — 卡片标题
+    card-desc — 卡片描述文字
+    card-badge — 小标签
+    card-list — 无序列表（带分隔线）
+  也可在 html 中写 <style> 自定义样式，但请保持深色主题一致性
+
+示例：
+\`\`\`dse
+type: card
+label: 核心特性
+html:
+<div class="card-grid">
+  <div class="card-item">
+    <div class="card-icon"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+    <div class="card-title">极速响应</div>
+    <div class="card-desc">毫秒级延迟，流畅的交互体验</div>
+  </div>
+  <div class="card-item">
+    <div class="card-icon"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+    <div class="card-title">安全可靠</div>
+    <div class="card-desc">端到端加密，数据安全有保障</div>
+  </div>
+</div>
+\`\`\`
+
+---------- 11. map（地图卡片）----------
+用途：在回答中展示某个地点的地图，适合地理位置介绍、旅游推荐、地点说明等场景。
+字段：
+  lat: 纬度（必填，如 39.9042）
+  lng: 经度（必填，如 116.3974）
+  zoom: 缩放级别（选填，默认 14，范围 1-18，数字越大越详细）
+  marker: 地点名称（选填，显示在地图下方）
+地图使用 OpenStreetMap 瓦片渲染，自动在目标位置显示标记点，并提供完整地图链接。
+
+示例：
+\`\`\`dse
+type: map
+label: 北京天安门广场
+lat: 39.9042
+lng: 116.3974
+zoom: 15
+marker: 天安门广场
+\`\`\`
+
+---------- 12. mindmap（思维导图）----------
+用途：以思维导图形式展示概念之间的关联关系，适合知识体系梳理、方案对比、分类总结、内容大纲等场景。
+字段：
+  center: 中心主题（必填）
+  nodes: 分支声明区（用 - 列出每个分支）
+分支格式：- 分支名|子节点1,子节点2,子节点3
+  第1段为分支名称（必填），第2段为该分支的子节点（用逗号分隔，选填）
+  分支自动交替分布在左右两侧，每个分支使用不同颜色区分。
+
+示例：
+\`\`\`dse
+type: mindmap
+label: 前端技术栈
+center: Web 前端
+nodes:
+- 框架|React,Vue,Angular,Svelte
+- 样式|CSS Modules,Tailwind,Sass
+- 构建|Vite,Webpack,esbuild
+- 语言|TypeScript,JavaScript
+- 测试|Jest,Vitest,Playwright
+\`\`\`
+
+---------- 13. image（图片展示）----------
+用途：展示网络图片，支持大图、小图、自定义尺寸三种模式。适合展示产品截图、风景照片、示意图、对比图等。支持单张或多张图片。当向用户讲解知识时，建议配合图片帮助理解（如搜索相关示意图URL），图文并茂效果更好。
+字段：
+  src: 单张图片的URL地址（单图时使用）
+  size: 显示尺寸，可选 large（大图，占满宽度，默认）、small（小图，约1/3宽度）、custom（自定义）
+  alt: 图片描述文字（选填）
+  caption: 图片说明（选填，显示在图片下方）
+  width: 自定义宽度（仅 size 为 custom 时有效，如 "300px" 或 "50%"）
+  height: 自定义高度（仅 size 为 custom 时有效）
+  images: 多张图片声明区（用 - 列出，格式为 URL|描述|说明）
+图片支持点击放大查看原图。
+
+单张大图示例：
+\`\`\`dse
+type: image
+label: 示意图
+src: https://example.com/photo.jpg
+size: large
+caption: 这是一张示例图片
+\`\`\`
+
+多张小图示例：
+\`\`\`dse
+type: image
+label: 对比图
+size: small
+images:
+- https://example.com/a.jpg|方案A|传统方案
+- https://example.com/b.jpg|方案B|改进方案
+- https://example.com/c.jpg|方案C|最优方案
+\`\`\`
+
+提示：在 card 组件的 HTML 中也可以直接使用 <img> 标签嵌入图片，配合其他内容做图文混排。在其他组件中引用图片时请使用 card 做图文组合。
+
 ===== 使用建议 =====
-1. 在合适的场景自然使用，不要每句话都加组件
-2. 当你需要用户做选择时→用 buttons 或 checklist
-3. 当你需要收集信息时→用 form
-4. 当你需要用户确认时→用 confirm
-5. 当你展示参数让用户调整时→用 slider
-6. 当你展示结构化数据让用户选择时→用 table
-7. 当你生成了可编辑的文本片段时→用 text
-8. 当你展示数据趋势或对比时→用 chart
-9. 当你展示系统架构、流程或层级结构时→用 structure
-10. 可以在一条回复中使用多个组件，它们会各自独立渲染
+1. 优先使用 card 组件！当你的回答包含知识讲解、功能介绍、对比分析、特性总结、优缺点列举、推荐清单、概念解释、技巧分享、步骤说明、工具推荐等展示性内容时，都应使用 card 以卡片化排版提升阅读体验。card 是最核心、最常用的组件
+2. 只有在需要用户交互（选择、填写、确认、调参等）时，才使用对应的交互组件：buttons/checklist（选择）、form（填写）、confirm（确认）、slider（调参）
+3. 展示纯结构化数据让用户选择时→用 table
+4. 展示数据趋势或对比时→用 chart
+5. 展示系统架构、流程时→用 structure
+6. 涉及地理位置、旅行推荐、地点介绍时→用 map
+7. 梳理知识体系、分类关系、内容大纲时→用 mindmap
+8. 需要展示网络图片、截图、照片时→用 image（大图/小图/自定义），也可在 card 中用 <img> 嵌入图片做图文混排
+9. 生成可编辑文本片段时→用 text
+10. 可以在一条回复中混用多个组件，它们会各自独立渲染
 11. 组件之间可以穿插普通文字说明`;
 
   let enabled = true;
   const processedNodes = new WeakSet();
+  const processedPrompts = new WeakSet();
   let scanTimer = null;
 
   // ============ 提示词注入状态 ============
@@ -288,55 +405,70 @@ nodes:
   }
 
   function watchUrlChange() {
-    var checkUrl = location.href;
-    setInterval(function() {
-      if (location.href !== checkUrl) {
-        checkUrl = location.href;
+    var lastUrl = location.href;
+
+    function onUrlChange() {
+      if (location.href !== lastUrl) {
+        lastUrl = location.href;
         if (isNewChatPage()) {
           injectedThisChat = false;
           skippedToastShown = false;
         }
         console.log('[DSE] URL变化:', location.pathname);
       }
-    }, 500);
+    }
+
+    var origPush = history.pushState;
+    var origReplace = history.replaceState;
+    history.pushState = function() { origPush.apply(this, arguments); onUrlChange(); };
+    history.replaceState = function() { origReplace.apply(this, arguments); onUrlChange(); };
+    window.addEventListener('popstate', onUrlChange);
+    setInterval(onUrlChange, 2000);
   }
 
   function interceptSend() {
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
         var ta = document.querySelector('textarea');
-        if (ta && e.target === ta) {
+        if (ta) {
           tryInjectPrompt(ta);
         }
       }
     }, true);
 
     document.addEventListener('click', function(e) {
-      var btn = e.target.closest('button, [role="button"]');
-      if (!btn) return;
+      if (!e.target.closest('button, [role="button"]')) return;
       var ta = document.querySelector('textarea');
-      if (!ta) return;
-      var container = ta.closest('form, [class*="input"], [class*="chat"], [class*="send"]');
-      if (container && container.contains(btn)) {
+      if (ta) {
         tryInjectPrompt(ta);
       }
     }, true);
   }
 
   function tryInjectPrompt(textarea) {
-    if (!autoPrompt || !promptText) return;
+    if (!autoPrompt || !promptText) {
+      console.log('[DSE] 注入跳过: autoPrompt=%s, promptText长度=%d', autoPrompt, (promptText||'').length);
+      return;
+    }
     if (!isNewChatPage()) {
       if (!skippedToastShown) {
         showToast('已有对话，跳过提示词注入');
         skippedToastShown = true;
+        console.log('[DSE] 注入跳过: 非新聊天页面, pathname=%s', location.pathname);
       }
       return;
     }
-    if (injectedThisChat) return;
+    if (injectedThisChat) {
+      console.log('[DSE] 注入跳过: 本次聊天已注入');
+      return;
+    }
 
     var currentText = textarea.value;
     if (!currentText.trim()) return;
-    if (currentText.includes('[系统指令')) return;
+    if (currentText.includes('[系统指令')) {
+      console.log('[DSE] 注入跳过: 内容已含系统指令');
+      return;
+    }
 
     var setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
     var injected = promptText + '\n\n---\n\n' + currentText;
@@ -352,6 +484,55 @@ nodes:
 
   var observer = null;
 
+  // ---- 主题检测 ----
+  var currentTheme = 'dark';
+
+  function detectTheme() {
+    var html = document.documentElement;
+    var body = document.body;
+    if (html.classList.contains('light') || body.classList.contains('light') ||
+        html.classList.contains('light-mode') || body.classList.contains('light-mode')) {
+      return 'light';
+    }
+    if (html.classList.contains('dark') || body.classList.contains('dark') ||
+        html.classList.contains('dark-mode') || body.classList.contains('dark-mode')) {
+      return 'dark';
+    }
+    var theme = html.getAttribute('data-theme') || html.getAttribute('data-color-mode') ||
+                html.getAttribute('data-color-scheme') || body.getAttribute('data-theme') || '';
+    if (theme) return theme.indexOf('light') !== -1 ? 'light' : 'dark';
+    var bg = getComputedStyle(body).backgroundColor;
+    var m = bg.match(/\d+/g);
+    if (m) {
+      var lum = (0.299 * parseInt(m[0]) + 0.587 * parseInt(m[1]) + 0.114 * parseInt(m[2])) / 255;
+      return lum > 0.5 ? 'light' : 'dark';
+    }
+    return 'dark';
+  }
+
+  function updateAllThemes() {
+    var t = detectTheme();
+    if (t === currentTheme) return;
+    currentTheme = t;
+    document.documentElement.setAttribute('data-dse-theme', t);
+    document.querySelectorAll('.dse-interactive-wrapper').forEach(function(w) {
+      w.setAttribute('data-theme', t);
+    });
+    console.log('[DSE] 主题切换:', t);
+  }
+
+  function startThemeObserver() {
+    currentTheme = detectTheme();
+    document.documentElement.setAttribute('data-dse-theme', currentTheme);
+    var mo = new MutationObserver(updateAllThemes);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme', 'data-color-mode', 'data-color-scheme'] });
+    if (document.body) {
+      mo.observe(document.body, { attributes: true, attributeFilter: ['class', 'style', 'data-theme', 'data-color-mode', 'data-color-scheme'] });
+    }
+  }
+
+  startThemeObserver();
+
   function startObserver() {
     if (observer) return;
     observer = new MutationObserver(function() { if (enabled) debouncedScan(); });
@@ -360,8 +541,12 @@ nodes:
   }
 
   function debouncedScan() {
-    clearTimeout(scanTimer);
-    scanTimer = setTimeout(scanPage, 800);
+    if (!scanTimer) {
+      scanTimer = setTimeout(function() {
+        scanTimer = null;
+        scanPage();
+      }, 800);
+    }
   }
 
   function scanPage() {
@@ -382,17 +567,26 @@ nodes:
           var pre = block.closest('pre') || block;
           processedNodes.add(pre);
 
-          var wrapper = document.createElement('div');
-          wrapper.className = 'dse-interactive-wrapper';
-          pre.parentNode.insertBefore(wrapper, pre);
-          pre.style.display = 'none';
-
-          renderInteractive(wrapper, parsed);
-          console.log('[DSE] 交互 UI 已渲染:', parsed.type);
+          (function(b, p, snapshot) {
+            setTimeout(function() {
+              var current = (b.textContent || '').trim();
+              if (current !== snapshot) {
+                processedNodes.delete(b);
+                processedNodes.delete(p);
+                return;
+              }
+              var wrapper = document.createElement('div');
+              wrapper.className = 'dse-interactive-wrapper';
+              p.parentNode.insertBefore(wrapper, p);
+              p.style.display = 'none';
+              renderInteractive(wrapper, parseConfig(current));
+            }, 1000);
+          })(block, pre, text);
         }
       }
     });
     scanLinks();
+    collapsePrompts();
   }
 
   function isStandaloneLink(link) {
@@ -471,6 +665,153 @@ nodes:
     });
   }
 
+  // ============ 折叠系统指令 ============
+
+  function collapsePrompts() {
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var found = [];
+    var node;
+
+    while (node = walker.nextNode()) {
+      if (node.textContent.indexOf('[系统指令') !== -1) {
+        found.push(node);
+      }
+    }
+
+    found.forEach(function(textNode) {
+      var parent = textNode.parentElement;
+      if (!parent) return;
+      if (parent.closest('.dse-prompt-collapse')) return;
+      if (processedPrompts.has(textNode)) return;
+
+      var text = textNode.textContent;
+      var promptStart = text.indexOf('[系统指令');
+      if (promptStart === -1) return;
+
+      var sepMatch = text.substring(promptStart).match(/\n---[\s]*\n/);
+      if (sepMatch) {
+        processedPrompts.add(textNode);
+        var sepStart = promptStart + sepMatch.index;
+        var sepEnd = sepStart + sepMatch[0].length;
+
+        var beforeText = text.substring(0, promptStart);
+        var promptPart = text.substring(promptStart, sepEnd);
+        var afterText = text.substring(sepEnd);
+
+        var details = document.createElement('details');
+        details.className = 'dse-prompt-collapse';
+        var summary = document.createElement('summary');
+        summary.className = 'dse-prompt-summary';
+        summary.textContent = '系统指令 (点击展开)';
+        details.appendChild(summary);
+        var content = document.createElement('div');
+        content.className = 'dse-prompt-content';
+        content.style.whiteSpace = 'pre-wrap';
+        content.textContent = promptPart;
+        details.appendChild(content);
+
+        var frag = document.createDocumentFragment();
+        if (beforeText) frag.appendChild(document.createTextNode(beforeText));
+        frag.appendChild(details);
+        if (afterText) frag.appendChild(document.createTextNode(afterText));
+        parent.replaceChild(frag, textNode);
+        return;
+      }
+
+      var container = parent;
+      while (container && container !== document.body) {
+        var t = container.textContent || '';
+        if (t.indexOf('[系统指令') !== -1 && (t.indexOf('---') !== -1 || container.querySelector('hr'))) {
+          var childHasBoth = false;
+          for (var c = 0; c < container.children.length; c++) {
+            var ct = container.children[c].textContent || '';
+            if (ct.indexOf('[系统指令') !== -1 && (ct.indexOf('---') !== -1 || container.children[c].querySelector('hr'))) {
+              childHasBoth = true;
+              break;
+            }
+          }
+          if (!childHasBoth) break;
+        }
+        container = container.parentElement;
+      }
+
+      if (!container || container === document.body) return;
+      if (processedPrompts.has(container)) return;
+      processedPrompts.add(container);
+
+      var hr = container.querySelector('hr');
+      if (hr) {
+        collapseWithHr(container, hr);
+      } else {
+        collapseWithNodes(container);
+      }
+    });
+  }
+
+  function collapseWithHr(container, hr) {
+    var children = Array.from(container.childNodes);
+    var startIdx = -1;
+    var hrIdx = -1;
+
+    for (var i = 0; i < children.length; i++) {
+      if (startIdx === -1 && children[i].textContent && children[i].textContent.indexOf('[系统指令') !== -1) {
+        startIdx = i;
+      }
+      if (children[i] === hr || (children[i].nodeType === 1 && children[i].querySelector && children[i].querySelector('hr') === hr)) {
+        hrIdx = i;
+        break;
+      }
+    }
+
+    if (startIdx === -1 || hrIdx === -1 || startIdx > hrIdx) return;
+    wrapInDetails(container, children, startIdx, hrIdx);
+  }
+
+  function collapseWithNodes(container) {
+    var children = Array.from(container.childNodes);
+    var startIdx = -1;
+    var endIdx = -1;
+
+    for (var i = 0; i < children.length; i++) {
+      var nodeText = children[i].textContent || '';
+
+      if (startIdx === -1 && nodeText.indexOf('[系统指令') !== -1) {
+        startIdx = i;
+      }
+
+      if (startIdx !== -1) {
+        var trimmed = nodeText.trim();
+        if (trimmed === '---') { endIdx = i; break; }
+        if (children[i].nodeType === 3 && /\n---\s*$/.test(nodeText)) { endIdx = i; break; }
+      }
+    }
+
+    if (startIdx === -1 || endIdx === -1 || startIdx > endIdx) return;
+    wrapInDetails(container, Array.from(container.childNodes), startIdx, endIdx);
+  }
+
+  function wrapInDetails(container, children, startIdx, endIdx) {
+    var details = document.createElement('details');
+    details.className = 'dse-prompt-collapse';
+
+    var summary = document.createElement('summary');
+    summary.className = 'dse-prompt-summary';
+    summary.textContent = '系统指令 (点击展开)';
+    details.appendChild(summary);
+
+    var content = document.createElement('div');
+    content.className = 'dse-prompt-content';
+
+    var toMove = [];
+    for (var i = startIdx; i <= endIdx; i++) {
+      toMove.push(children[i]);
+    }
+
+    container.insertBefore(details, toMove[0]);
+    toMove.forEach(function(n) { content.appendChild(n); });
+    details.appendChild(content);
+  }
+
   // ============ 配置解析 ============
 
   function parseConfig(raw) {
@@ -483,8 +824,16 @@ nodes:
       } catch(e) { /* fall through */ }
     }
 
+    var htmlContent = '';
+    var hIdx = raw.indexOf('\nhtml:');
+    if (hIdx !== -1) {
+      var afterMarker = raw.substring(hIdx + 6);
+      htmlContent = afterMarker.replace(/^\s*\n?/, '');
+      raw = raw.substring(0, hIdx);
+    }
+
     var lines = raw.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
-    var cfg = { items: [], fields: [], columns: [], rows: [], options: [], nodes: [] };
+    var cfg = { items: [], fields: [], columns: [], rows: [], options: [], nodes: [], images: [] };
     var section = null;
 
     for (var i = 0; i < lines.length; i++) {
@@ -506,6 +855,18 @@ nodes:
           case 'value':       cfg.value = val; break;
           case 'chartType':   cfg.chartType = val; break;
           case 'charttype':   cfg.chartType = val; break;
+          case 'center':      cfg.center = val; break;
+          case 'lat':         cfg.lat = Number(val); break;
+          case 'lng':         cfg.lng = Number(val); break;
+          case 'zoom':        cfg.zoom = Number(val); break;
+          case 'marker':      cfg.marker = val; break;
+          case 'src':         cfg.src = val; break;
+          case 'size':        cfg.size = val; break;
+          case 'alt':         cfg.alt = val; break;
+          case 'caption':     cfg.caption = val; break;
+          case 'width':       cfg.width = val; break;
+          case 'height':      cfg.height = val; break;
+          case 'images':      section = 'images'; break;
           case 'items':       section = 'items'; break;
           case 'fields':      section = 'fields'; break;
           case 'columns':     section = 'columns'; break;
@@ -525,17 +886,22 @@ nodes:
         } else if (section === 'nodes') {
           var np = val.split('|').map(function(s) { return s.trim(); });
           cfg.nodes.push({ name: np[0], desc: np[1] || '', detail: np[2] || '' });
+        } else if (section === 'images') {
+          var ip = val.split('|').map(function(s) { return s.trim(); });
+          cfg.images.push({ src: ip[0], alt: ip[1] || '', caption: ip[2] || '' });
         } else {
           (cfg[section] || cfg.items).push(val);
         }
       }
     }
+    if (htmlContent) cfg.html = htmlContent;
     return cfg.type ? { type: cfg.type, config: cfg } : null;
   }
 
   // ============ UI 渲染 ============
 
   function renderInteractive(wrapper, parsed) {
+    wrapper.setAttribute('data-theme', currentTheme);
     var shadow = wrapper.attachShadow({ mode: 'closed' });
     var style = document.createElement('style');
     style.textContent = SHADOW_CSS;
@@ -566,6 +932,10 @@ nodes:
       case 'text':      buildText(body, parsed.config); break;
       case 'chart':     buildChart(body, parsed.config); break;
       case 'structure': buildStructure(body, parsed.config); break;
+      case 'card':      buildCard(body, parsed.config); break;
+      case 'map':       buildMap(body, parsed.config); break;
+      case 'mindmap':   buildMindmap(body, parsed.config); break;
+      case 'image':     buildImage(body, parsed.config); break;
       default:
         body.appendChild(el('div', 'status-message', '不支持的交互类型: ' + parsed.type));
     }
@@ -578,6 +948,10 @@ nodes:
     slider: '参数调节', table: '数据表格', buttons: '快捷操作', text: '文本编辑',
     chart: '数据图表',
     structure: '结构图',
+    card: '自定义卡片',
+    map: '地图',
+    mindmap: '思维导图',
+    image: '图片展示',
   };
   var TYPE_SUBTITLES = {
     checklist: '勾选后点击提交', form: '填写信息后提交到聊天',
@@ -585,6 +959,10 @@ nodes:
     buttons: '点击按钮触发操作', text: '编辑文本后复制或提交',
     chart: '可切换折线图/柱状图',
     structure: '点击模块查看详情',
+    card: 'AI 自由渲染',
+    map: '点击查看完整地图',
+    mindmap: '拖拽平移 · 滚轮缩放',
+    image: '点击查看大图',
   };
 
   // ---- checklist ----
@@ -802,10 +1180,11 @@ nodes:
     var statusEl = el('div', 'status-message', '等待操作...');
     var tag = 'dse_' + (cfg.label || cfg.title || 'buttons') + '_' + Date.now();
 
-    var styles = ['primary', 'success', 'secondary', 'danger-outline'];
     items.forEach(function(item, i) {
-      var btn = mkBtn(styles[i % styles.length], item);
+      var btn = mkBtn('btn-option', item);
       btn.addEventListener('click', function() {
+        row.querySelectorAll('.button').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
         replaceChatInput(tag, '用户点击了: ' + item);
         statusEl.textContent = '已执行: ' + item;
         statusEl.className = 'status-message done';
@@ -1085,6 +1464,359 @@ nodes:
     return el('button', 'button ' + variant, text);
   }
 
+  // ---- card ----
+  function sanitizeHtml(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    div.querySelectorAll('script,iframe,object,embed,link,meta').forEach(function(el) { el.remove(); });
+    div.querySelectorAll('*').forEach(function(node) {
+      Array.from(node.attributes).forEach(function(attr) {
+        if (attr.name.startsWith('on') ||
+            (attr.name === 'href' && attr.value.trim().toLowerCase().startsWith('javascript:'))) {
+          node.removeAttribute(attr.name);
+        }
+      });
+    });
+    return div.innerHTML;
+  }
+
+  function buildCard(root, cfg) {
+    if (!cfg.html) {
+      root.appendChild(el('div', 'status-message', '缺少 html 内容'));
+      return;
+    }
+    var container = el('div', 'card-container');
+    container.innerHTML = sanitizeHtml(cfg.html);
+    root.appendChild(container);
+  }
+
+  // ---- map ----
+  function buildMap(root, cfg) {
+    var lat = cfg.lat || 0;
+    var lng = cfg.lng || 0;
+    var zoom = cfg.zoom || 14;
+    var label = cfg.marker || cfg.label || cfg.title || '';
+
+    var n = Math.pow(2, zoom);
+    var tileXf = (lng + 180) / 360 * n;
+    var latRad = lat * Math.PI / 180;
+    var tileYf = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n;
+    var tileX = Math.floor(tileXf);
+    var tileY = Math.floor(tileYf);
+    var pixelX = (tileXf - tileX) * 256;
+    var pixelY = (tileYf - tileY) * 256;
+
+    var container = el('div', 'map-container');
+    var viewport = el('div', 'map-viewport');
+    var grid = el('div', 'map-grid');
+
+    for (var dy = -1; dy <= 1; dy++) {
+      for (var dx = -1; dx <= 1; dx++) {
+        var img = document.createElement('img');
+        img.src = 'https://tile.openstreetmap.org/' + zoom + '/' + (tileX + dx) + '/' + (tileY + dy) + '.png';
+        img.className = 'map-tile';
+        img.draggable = false;
+        img.alt = '';
+        grid.appendChild(img);
+      }
+    }
+
+    var offsetX = 256 + pixelX;
+    var offsetY = 256 + pixelY;
+    grid.style.transform = 'translate(calc(50% - ' + offsetX + 'px), calc(50% - ' + offsetY + 'px))';
+
+    var marker = el('div', 'map-marker');
+    marker.innerHTML = '<svg viewBox="0 0 24 32" width="28" height="36"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill="#f7768e"/><circle cx="12" cy="11" r="4.5" fill="#fff"/></svg>';
+
+    viewport.appendChild(grid);
+    viewport.appendChild(marker);
+    container.appendChild(viewport);
+
+    var info = el('div', 'map-info');
+    if (label) {
+      var nameEl = el('div', 'map-name');
+      nameEl.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+      nameEl.appendChild(document.createTextNode(' ' + label));
+      info.appendChild(nameEl);
+    }
+    var coords = el('span', 'map-coords', lat.toFixed(4) + ', ' + lng.toFixed(4));
+    info.appendChild(coords);
+
+    var attr = el('span', 'map-attr');
+    attr.textContent = '© OpenStreetMap';
+    info.appendChild(attr);
+
+    var link = document.createElement('a');
+    link.className = 'map-link';
+    link.href = 'https://www.openstreetmap.org/?mlat=' + lat + '&mlon=' + lng + '#map=' + zoom + '/' + lat + '/' + lng;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = '查看完整地图 ↗';
+    info.appendChild(link);
+
+    container.appendChild(info);
+    root.appendChild(container);
+  }
+
+  // ---- mindmap ----
+  function buildMindmap(root, cfg) {
+    var centerText = cfg.center || cfg.label || cfg.title || '中心主题';
+    var branches = (cfg.nodes || []).map(function(n) {
+      var children = n.desc ? n.desc.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+      return { name: n.name, children: children };
+    });
+
+    if (branches.length === 0) {
+      root.appendChild(el('div', 'status-message', '无节点数据'));
+      return;
+    }
+
+    var colors = ['#7aa2f7', '#9ece6a', '#f7768e', '#e0af68', '#bb9af7', '#73daca', '#ff9e64', '#2ac3de'];
+    var rightItems = [], leftItems = [];
+    branches.forEach(function(b, i) {
+      if (i % 2 === 0) rightItems.push({ b: b, ci: i });
+      else leftItems.push({ b: b, ci: i });
+    });
+
+    function textWidth(t) {
+      var w = 0;
+      for (var i = 0; i < t.length; i++) w += t.charCodeAt(i) > 127 ? 14 : 8;
+      return Math.max(w + 28, 60);
+    }
+
+    var nodeH = 32, childH = 26, gap = 16, childGap = 8, hSpace = 60;
+    var centerW = Math.max(textWidth(centerText), 100);
+    var maxBW = 100, maxCW = 80;
+    branches.forEach(function(b) {
+      maxBW = Math.max(maxBW, textWidth(b.name));
+      b.children.forEach(function(c) { maxCW = Math.max(maxCW, textWidth(c)); });
+    });
+
+    function sideHeight(items) {
+      var h = 0;
+      items.forEach(function(item, i) {
+        if (i > 0) h += gap;
+        h += nodeH;
+        if (item.b.children.length > 0) {
+          h += childGap;
+          h += item.b.children.length * childH + (item.b.children.length - 1) * childGap;
+        }
+      });
+      return h;
+    }
+
+    var rightH = sideHeight(rightItems);
+    var leftH = sideHeight(leftItems);
+    var hasChildren = branches.some(function(b) { return b.children.length > 0; });
+    var childLayer = hasChildren ? (maxCW + hSpace) : 0;
+    var pad = 24;
+
+    var totalW = pad + childLayer + maxBW + hSpace + centerW + hSpace + maxBW + childLayer + pad;
+    var totalH = Math.max(rightH, leftH, 80) + pad * 2;
+    var cx = totalW / 2;
+    var cy = totalH / 2;
+
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + totalW + ' ' + totalH);
+    svg.setAttribute('width', '100%');
+    svg.style.display = 'block';
+
+    function svgEl(tag, attrs) {
+      var e = document.createElementNS(ns, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    function drawConn(x1, y1, x2, y2, color, w) {
+      var mx = (x1 + x2) / 2;
+      svg.appendChild(svgEl('path', {
+        d: 'M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + x2 + ',' + y2,
+        fill: 'none', stroke: color, 'stroke-width': w || '2', opacity: '0.5'
+      }));
+    }
+
+    function drawNode(x, y, w, h, text, color, isBranch) {
+      svg.appendChild(svgEl('rect', {
+        x: x - w / 2, y: y - h / 2, width: w, height: h,
+        rx: h / 2, fill: isBranch ? '#111' : '#0d0d0d',
+        stroke: color, 'stroke-width': isBranch ? '1.5' : '1',
+        'class': isBranch ? 'mm-b' : 'mm-ch'
+      }));
+      var t = svgEl('text', {
+        x: x, y: y + 4.5, 'text-anchor': 'middle',
+        fill: isBranch ? color : '#aaa',
+        'font-size': isBranch ? '13' : '11', 'font-weight': isBranch ? '600' : '400',
+        'font-family': '"DM Sans","Noto Sans SC",system-ui,sans-serif',
+        'class': isBranch ? '' : 'mm-cht'
+      });
+      t.textContent = text;
+      svg.appendChild(t);
+    }
+
+    svg.appendChild(svgEl('rect', {
+      x: cx - centerW / 2, y: cy - 22, width: centerW, height: 44,
+      rx: 22, fill: '#2a2a2a', stroke: '#fff', 'stroke-width': '1.5', 'class': 'mm-c'
+    }));
+    var ct = svgEl('text', {
+      x: cx, y: cy + 5, 'text-anchor': 'middle', fill: '#fff',
+      'font-size': '14', 'font-weight': '700',
+      'font-family': '"DM Sans","Noto Sans SC",system-ui,sans-serif', 'class': 'mm-ct'
+    });
+    ct.textContent = centerText;
+    svg.appendChild(ct);
+
+    function drawSide(items, isRight) {
+      var sH = sideHeight(items);
+      var curY = cy - sH / 2;
+
+      items.forEach(function(item) {
+        var b = item.b;
+        var color = colors[item.ci % colors.length];
+        var by = curY + nodeH / 2;
+        var branchX = isRight ? cx + centerW / 2 + hSpace + maxBW / 2 : cx - centerW / 2 - hSpace - maxBW / 2;
+        var connStart = isRight ? cx + centerW / 2 : cx - centerW / 2;
+        var connEnd = isRight ? branchX - maxBW / 2 : branchX + maxBW / 2;
+
+        drawConn(connStart, cy, connEnd, by, color, '2');
+        drawNode(branchX, by, maxBW, nodeH, b.name, color, true);
+
+        curY += nodeH;
+
+        if (b.children.length > 0) {
+          curY += childGap;
+          var childBaseX = isRight ? branchX + maxBW / 2 + hSpace + maxCW / 2 : branchX - maxBW / 2 - hSpace - maxCW / 2;
+          var childConnStart = isRight ? branchX + maxBW / 2 : branchX - maxBW / 2;
+
+          b.children.forEach(function(child) {
+            var chy = curY + childH / 2;
+            var childConnEnd = isRight ? childBaseX - maxCW / 2 : childBaseX + maxCW / 2;
+            drawConn(childConnStart, by, childConnEnd, chy, color, '1.5');
+            drawNode(childBaseX, chy, maxCW, childH, child, color, false);
+            curY += childH + childGap;
+          });
+          curY -= childGap;
+        }
+        curY += gap;
+      });
+    }
+
+    drawSide(rightItems, true);
+    drawSide(leftItems, false);
+
+    var wrap = el('div', 'mm-wrap');
+    wrap.appendChild(svg);
+    root.appendChild(wrap);
+
+    // drag & zoom
+    var scale = 1, panX = 0, panY = 0, dragging = false, startX, startY;
+    function applyTransform() { svg.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')'; }
+    svg.style.transformOrigin = '0 0';
+    svg.style.cursor = 'grab';
+    svg.style.minWidth = '0';
+    wrap.style.overflow = 'hidden';
+
+    wrap.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      var r = wrap.getBoundingClientRect();
+      var mx = e.clientX - r.left, my = e.clientY - r.top;
+      var d = e.deltaY > 0 ? 0.9 : 1.1;
+      var ns = Math.max(0.3, Math.min(scale * d, 4));
+      panX = mx - (mx - panX) * (ns / scale);
+      panY = my - (my - panY) * (ns / scale);
+      scale = ns;
+      applyTransform();
+    }, { passive: false });
+
+    svg.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      dragging = true; startX = e.clientX - panX; startY = e.clientY - panY;
+      svg.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      panX = e.clientX - startX; panY = e.clientY - startY;
+      applyTransform();
+    });
+    document.addEventListener('mouseup', function() {
+      if (dragging) { dragging = false; svg.style.cursor = 'grab'; }
+    });
+
+    var lastTouchDist = 0, lastTouchX = 0, lastTouchY = 0;
+    wrap.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 1) {
+        dragging = true; startX = e.touches[0].clientX - panX; startY = e.touches[0].clientY - panY;
+      } else if (e.touches.length === 2) {
+        dragging = false;
+        lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        lastTouchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      }
+      e.preventDefault();
+    }, { passive: false });
+    wrap.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 1 && dragging) {
+        panX = e.touches[0].clientX - startX; panY = e.touches[0].clientY - startY;
+        applyTransform();
+      } else if (e.touches.length === 2) {
+        var dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        var r = wrap.getBoundingClientRect();
+        var mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
+        var my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+        var ns = Math.max(0.3, Math.min(scale * (dist / lastTouchDist), 4));
+        panX = mx - (mx - panX) * (ns / scale);
+        panY = my - (my - panY) * (ns / scale);
+        scale = ns;
+        lastTouchDist = dist;
+        applyTransform();
+      }
+      e.preventDefault();
+    }, { passive: false });
+    wrap.addEventListener('touchend', function() { dragging = false; });
+  }
+
+  // ---- image ----
+  function buildImage(root, cfg) {
+    var imgList = cfg.images || [];
+    if (cfg.src) imgList = [{ src: cfg.src, alt: cfg.alt || '', caption: cfg.caption || '' }];
+    if (imgList.length === 0) { root.appendChild(el('div', 'status-message', '无图片数据')); return; }
+
+    var size = (cfg.size || 'large').toLowerCase();
+    var isGrid = imgList.length > 1 || size === 'small';
+    var container = el('div', isGrid ? 'img-grid' : 'img-single');
+
+    imgList.forEach(function(item) {
+      var card = el('div', 'img-card' + (size === 'small' ? ' img-sm' : size === 'custom' ? ' img-custom' : ''));
+      var img = document.createElement('img');
+      img.className = 'img-main';
+      img.src = item.src;
+      img.alt = item.alt || '';
+      img.loading = 'lazy';
+      img.onerror = function() { this.style.display = 'none'; card.appendChild(el('div', 'img-err', '图片加载失败')); };
+      if (cfg.width) img.style.width = cfg.width.indexOf('px') !== -1 || cfg.width.indexOf('%') !== -1 ? cfg.width : cfg.width + 'px';
+      if (cfg.height) img.style.height = cfg.height.indexOf('px') !== -1 || cfg.height.indexOf('%') !== -1 ? cfg.height : cfg.height + 'px';
+
+      img.addEventListener('click', function() {
+        var overlay = document.createElement('div');
+        overlay.className = 'img-overlay';
+        var big = document.createElement('img');
+        big.src = item.src; big.alt = item.alt || '';
+        overlay.appendChild(big);
+        overlay.addEventListener('click', function() { overlay.remove(); });
+        (root.getRootNode() || document).appendChild(overlay);
+      });
+
+      card.appendChild(img);
+      if (item.caption || item.alt) {
+        card.appendChild(el('div', 'img-caption', item.caption || item.alt));
+      }
+      container.appendChild(card);
+    });
+
+    root.appendChild(container);
+  }
+
   function done(btn) {
     var originalText = btn.dataset.originalText || btn.textContent;
     btn.dataset.originalText = originalText;
@@ -1131,7 +1863,7 @@ nodes:
     * { box-sizing:border-box; }\
     button,input,select,textarea { font:inherit; }\
     button { cursor:pointer; }\
-    .panel { border:1px solid #fff; background:#202020; border-radius:18px; padding:20px; min-width:0; box-shadow:0 10px 35px rgba(81, 81, 81, 0.25); }\
+    .panel { border:none; background:#202020; border-radius:18px; padding:20px; min-width:0; box-shadow:0 0 0 0.5px rgba(255,255,255,0.4), 0 10px 35px rgba(81, 81, 81, 0.25); }\
     .section-heading { display:flex; gap:12px; align-items:flex-start; margin-bottom:20px; }\
     h2 { font-size:16px; margin:1px 0 5px; letter-spacing:-.02em; color:#fff; }\
     .section-heading p { font-size:12px; color:#777; margin:0; line-height:1.55; }\
@@ -1143,6 +1875,10 @@ nodes:
     .success { color:#aaa; background:#1a1a1a; border-color:#fff; }\
     .danger-outline { color:#999; border-color:#fff; background:transparent; }\
     .button.disabled { opacity:.4; cursor:default; transform:none!important; filter:none!important; }\
+    .btn-option { color:#ccc; background:#1a1a1a; border-color:#555; }\
+    .btn-option:hover { border-color:#888; color:#fff; }\
+    .button.active { background:#fff; color:#000; border-color:#fff; box-shadow:0 0 12px rgba(255,255,255,0.3); }\
+    .button-row:has(.active) .button:not(.active) { opacity:.45; }\
     .stats-row { margin-top:14px; }\
     .stat,.status-message,.metric-card { background:#111; border:1px solid #fff; border-radius:12px; padding:12px; }\
     .stat span,.metric-card span { display:block; font-size:11px; color:#888; margin-bottom:5px; }\
@@ -1198,5 +1934,126 @@ nodes:
     .arch-detail-title { font-size:18px; color:#fff; margin:0 0 10px; }\
     .arch-desc { font-size:13px; line-height:1.7; color:#bbb; margin:0 0 8px; }\
     .arch-info { font-size:12px; line-height:1.6; color:#666; margin:0; }\
+    .card-container { color:#e0e0e0; line-height:1.6; }\
+    .card-container svg { vertical-align:middle; }\
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }\
+    .card-item { background:#111; border:1px solid #333; border-radius:12px; padding:16px; transition:border-color .15s,background .15s; }\
+    .card-item:hover { background:#1a1a1a; border-color:#555; }\
+    .card-icon { color:#888; margin-bottom:10px; }\
+    .card-title { font-size:14px; font-weight:600; color:#fff; margin:0 0 6px; }\
+    .card-desc { font-size:12px; color:#888; margin:0; line-height:1.5; }\
+    .card-container h1,.card-container h2,.card-container h3 { color:#fff; margin:0 0 8px; }\
+    .card-container h3 { font-size:14px; }\
+    .card-container p { color:#aaa; font-size:13px; margin:4px 0; }\
+    .card-container a { color:#7aa2f7; text-decoration:none; }\
+    .card-container a:hover { text-decoration:underline; }\
+    .card-badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:11px; background:#1a1a1a; color:#888; border:1px solid #333; }\
+    .card-list { list-style:none; padding:0; margin:0; }\
+    .card-list li { padding:10px 12px; border-bottom:1px solid #222; color:#bbb; font-size:13px; display:flex; align-items:center; gap:10px; }\
+    .card-list li:last-child { border-bottom:none; }\
+    .card-container style { display:none; }\
+    .map-container { border-radius:12px; overflow:hidden; background:#111; }\
+    .map-viewport { position:relative; width:100%; height:280px; overflow:hidden; background:#1a1a1a; }\
+    .map-grid { position:absolute; top:0; left:0; display:grid; grid-template-columns:repeat(3,256px); width:768px; height:768px; filter:brightness(0.7) contrast(1.1); }\
+    .map-tile { width:256px; height:256px; display:block; }\
+    .map-marker { position:absolute; top:50%; left:50%; transform:translate(-50%,-100%); z-index:2; pointer-events:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }\
+    .map-info { display:flex; align-items:center; gap:12px; padding:12px 16px; background:#111; flex-wrap:wrap; }\
+    .map-name { color:#fff; font-size:14px; font-weight:500; display:flex; align-items:center; gap:6px; }\
+    .map-coords { color:#666; font-size:12px; }\
+    .map-attr { color:#555; font-size:10px; }\
+    .map-link { color:#7aa2f7; font-size:12px; text-decoration:none; margin-left:auto; white-space:nowrap; }\
+    .map-link:hover { text-decoration:underline; }\
+    .mm-wrap { overflow:hidden; padding:8px 0; position:relative; }\
+    .mm-wrap svg { cursor:grab; }\
+    .img-single { width:100%; }\
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }\
+    .img-card { border-radius:10px; overflow:hidden; background:#111; border:1px solid #333; }\
+    .img-card.img-sm { max-width:200px; }\
+    .img-main { display:block; width:100%; height:auto; cursor:pointer; transition:opacity .15s; object-fit:cover; }\
+    .img-main:hover { opacity:.85; }\
+    .img-caption { padding:8px 10px; font-size:12px; color:#aaa; }\
+    .img-err { padding:24px; text-align:center; color:#666; font-size:12px; }\
+    .img-overlay { position:fixed; top:0; left:0; right:0; bottom:0; z-index:999999; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; cursor:zoom-out; }\
+    .img-overlay img { max-width:90vw; max-height:90vh; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,.6); }\
+    :host([data-theme="light"]) {\
+      color:#333;\
+      & .panel { background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.06); }\
+      & h2 { color:#1a1a1a; }\
+      & .section-heading p { color:#888; }\
+      & .button { border-color:#ddd; }\
+      & .primary { color:#fff; background:#4f46e5; border-color:#4f46e5; }\
+      & .success { color:#fff; background:#16a34a; border-color:#16a34a; }\
+      & .secondary { color:#333; background:#f0f0f0; border-color:#ccc; }\
+      & .danger-outline { color:#dc2626; border-color:#dc2626; background:transparent; }\
+      & .btn-option { color:#555; background:#f5f5f5; border-color:#ddd; }\
+      & .btn-option:hover { border-color:#aaa; color:#333; }\
+      & .button.active { background:#4f46e5; color:#fff; border-color:#4f46e5; box-shadow:0 0 12px rgba(79,70,229,0.3); }\
+      & .stat,& .status-message,& .metric-card { background:#f8f8f8; border-color:#e0e0e0; }\
+      & .stat span,& .metric-card span { color:#999; }\
+      & .stat strong,& .metric-card strong { color:#1a1a1a; }\
+      & .status-message { color:#555; }\
+      & .status-message.done { color:#1a1a1a; }\
+      & .field>span,& .field legend { color:#777; }\
+      & input:not([type=checkbox]):not([type=range]),& select,& textarea { border-color:#ddd; background:#fff; color:#333; }\
+      & select option { background:#fff; color:#333; }\
+      & input:focus,& select:focus,& textarea:focus { border-color:#7aa2f7; box-shadow:0 0 0 3px rgba(122,162,247,0.1); }\
+      & .check-label { color:#555; }\
+      & .check-label:hover { background:#f5f5f5; }\
+      & input[type=checkbox] { accent-color:#333; }\
+      & .result-box { border-color:#e0e0e0; background:#f8f8f8; color:#555; }\
+      & .result-box p { color:#888; }\
+      & .range-label { color:#777; }\
+      & .range-label strong { color:#1a1a1a; }\
+      & input[type=range] { accent-color:#333; }\
+      & .segmented { border-color:#ddd; background:#f5f5f5; }\
+      & .segmented button { color:#999; }\
+      & .segmented button.active { background:#fff; color:#1a1a1a; box-shadow:0 1px 3px rgba(0,0,0,0.1); }\
+      & th { color:#999; }\
+      & td,& th { border-bottom-color:#e8e8e8; }\
+      & td { color:#555; }\
+      & .clickable-row:hover { background:#f8f8f8; }\
+      & .clickable-row.selected { background:#f0f0f0; }\
+      & .status-badge.normal { color:#16a34a; background:#f0fdf4; border-color:#bbf7d0; }\
+      & .status-badge.warning { color:#ca8a04; background:#fefce8; border-color:#fde68a; }\
+      & .status-badge.error { color:#dc2626; background:#fef2f2; border-color:#fecaca; }\
+      & .hint { color:#999; }\
+      & .arch-node { color:#555; background:#f8f8f8; border-color:#ddd; }\
+      & .arch-node:hover { background:#f0f0f0; border-color:#aaa; color:#333; }\
+      & .arch-node.selected { color:#1a1a1a; background:#e8e8e8; border-color:#333; }\
+      & .arch-arrow { color:#ccc; }\
+      & .arch-detail { background:#f8f8f8; border-color:#ddd; }\
+      & .arch-tag { color:#999; }\
+      & .arch-detail-title { color:#1a1a1a; }\
+      & .arch-desc { color:#555; }\
+      & .arch-info { color:#888; }\
+      & .card-container { color:#333; }\
+      & .card-container h1,& .card-container h2,& .card-container h3 { color:#1a1a1a; }\
+      & .card-container p { color:#666; }\
+      & .card-item { background:#f8f8f8; border-color:#e0e0e0; }\
+      & .card-item:hover { background:#f0f0f0; border-color:#ccc; }\
+      & .card-icon { color:#777; }\
+      & .card-title { color:#1a1a1a; }\
+      & .card-desc { color:#777; }\
+      & .card-badge { background:#f0f0f0; color:#777; border-color:#ddd; }\
+      & .card-list li { border-bottom-color:#e8e8e8; color:#555; }\
+      & .map-container,& .map-info { background:#f8f8f8; }\
+      & .map-viewport { background:#eee; }\
+      & .map-grid { filter:none; }\
+      & .map-name { color:#1a1a1a; }\
+      & .map-coords,& .map-attr { color:#999; }\
+      & .chart-wrap rect { fill:#333; }\
+      & .chart-wrap circle { fill:#333; }\
+      & .chart-wrap polyline { stroke:#333; }\
+      & .chart-wrap polygon { fill:rgba(0,0,0,0.04); }\
+      & .chart-wrap line { stroke:#e0e0e0; }\
+      & .chart-wrap text { fill:#777; }\
+      & .mm-c { fill:#f0f0f0; stroke:#333; }\
+      & .mm-ct { fill:#1a1a1a; }\
+      & .mm-b { fill:#f8f8f8; }\
+      & .mm-ch { fill:#fff; }\
+      & .mm-cht { fill:#555; }\
+      & .img-card { background:#f8f8f8; border-color:#e0e0e0; }\
+      & .img-caption { color:#666; }\
+    }\
   ';
 })();

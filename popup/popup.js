@@ -13,11 +13,11 @@ const DEFAULT_PROMPT = `[系统指令 - 交互式 UI 输出规范]
 ===== 语法格式 =====
 用 \`\`\`dse 开头的代码块包裹，内容使用 key: value 格式，列表项用 - 开头。
 通用字段：
-  type: 组件类型（必填，见下方 9 种）
+  type: 组件类型（必填，见下方 13 种）
   label: 面板标题（选填，显示在顶部）
   title: 同 label，二选一即可
 
-===== 9 种组件详细说明 =====
+===== 13 种组件详细说明 =====
 
 ---------- 1. checklist（多选清单）----------
 用途：让用户从多个选项中勾选若干项后提交。
@@ -206,17 +206,133 @@ nodes:
 - 执行层|将动作意图转换成具体操作，并检查执行结果|输出：动作反馈与新状态
 \`\`\`
 
+---------- 10. card（自定义 HTML 卡片）★ 最常用组件 ----------
+用途：最核心的展示组件，应作为首选。当回答包含知识讲解、功能介绍、概念解释、对比分析、优缺点列举、推荐清单、技巧总结、步骤说明、信息摘要、工具推荐等展示性内容时，都应优先使用 card 以卡片化排版增强阅读体验。只有在明确需要用户交互（选择/填写/确认/调参）时才用其他交互组件。当用户要求展示 3D 模型、动画效果、可视化演示等高级需求时，也应使用 card，通过 HTML + CSS 3D transforms（perspective、rotateX/Y/Z、translateZ 等）或 CSS 动画实现。
+字段：
+  html: 之后的所有内容作为 HTML 代码渲染（必填）
+
+渲染规范（必须严格遵守）：
+  图标：使用 Lucide 风格内联 SVG，不要用 emoji
+    属性：viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+    图标参考库：https://lucide.dev/icons （搜索英文关键词查找 SVG path）
+  配色：标题 #fff | 正文 #aaa | 次要文字 #666 | 图标 #888 | 卡片背景 #111 | 边框 #333
+  圆角：10-12px
+  字号：标题 14-16px，正文 12-13px
+  可用 CSS 类：
+    card-grid — 自适应网格（auto-fit, minmax 200px）
+    card-item — 带 hover 效果的单个卡片
+    card-icon — 图标容器
+    card-title — 卡片标题
+    card-desc — 卡片描述文字
+    card-badge — 小标签
+    card-list — 无序列表（带分隔线）
+  也可在 html 中写 <style> 自定义样式，但请保持深色主题一致性
+
+示例：
+\`\`\`dse
+type: card
+label: 核心特性
+html:
+<div class="card-grid">
+  <div class="card-item">
+    <div class="card-icon"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+    <div class="card-title">极速响应</div>
+    <div class="card-desc">毫秒级延迟，流畅的交互体验</div>
+  </div>
+  <div class="card-item">
+    <div class="card-icon"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+    <div class="card-title">安全可靠</div>
+    <div class="card-desc">端到端加密，数据安全有保障</div>
+  </div>
+</div>
+\`\`\`
+
+---------- 11. map（地图卡片）----------
+用途：在回答中展示某个地点的地图，适合地理位置介绍、旅游推荐、地点说明等场景。
+字段：
+  lat: 纬度（必填，如 39.9042）
+  lng: 经度（必填，如 116.3974）
+  zoom: 缩放级别（选填，默认 14，范围 1-18，数字越大越详细）
+  marker: 地点名称（选填，显示在地图下方）
+地图使用 OpenStreetMap 瓦片渲染，自动在目标位置显示标记点，并提供完整地图链接。
+
+示例：
+\`\`\`dse
+type: map
+label: 北京天安门广场
+lat: 39.9042
+lng: 116.3974
+zoom: 15
+marker: 天安门广场
+\`\`\`
+
+---------- 12. mindmap（思维导图）----------
+用途：以思维导图形式展示概念之间的关联关系，适合知识体系梳理、方案对比、分类总结、内容大纲等场景。
+字段：
+  center: 中心主题（必填）
+  nodes: 分支声明区（用 - 列出每个分支）
+分支格式：- 分支名|子节点1,子节点2,子节点3
+  第1段为分支名称（必填），第2段为该分支的子节点（用逗号分隔，选填）
+  分支自动交替分布在左右两侧，每个分支使用不同颜色区分。
+
+示例：
+\`\`\`dse
+type: mindmap
+label: 前端技术栈
+center: Web 前端
+nodes:
+- 框架|React,Vue,Angular,Svelte
+- 样式|CSS Modules,Tailwind,Sass
+- 构建|Vite,Webpack,esbuild
+- 语言|TypeScript,JavaScript
+- 测试|Jest,Vitest,Playwright
+\`\`\`
+
+---------- 13. image（图片展示）----------
+用途：展示网络图片，支持大图、小图、自定义尺寸三种模式。适合展示产品截图、风景照片、示意图、对比图等。支持单张或多张图片。当向用户讲解知识时，建议配合图片帮助理解（如搜索相关示意图URL），图文并茂效果更好。
+字段：
+  src: 单张图片的URL地址（单图时使用）
+  size: 显示尺寸，可选 large（大图，占满宽度，默认）、small（小图，约1/3宽度）、custom（自定义）
+  alt: 图片描述文字（选填）
+  caption: 图片说明（选填，显示在图片下方）
+  width: 自定义宽度（仅 size 为 custom 时有效，如 "300px" 或 "50%"）
+  height: 自定义高度（仅 size 为 custom 时有效）
+  images: 多张图片声明区（用 - 列出，格式为 URL|描述|说明）
+图片支持点击放大查看原图。
+
+单张大图示例：
+\`\`\`dse
+type: image
+label: 示意图
+src: https://example.com/photo.jpg
+size: large
+caption: 这是一张示例图片
+\`\`\`
+
+多张小图示例：
+\`\`\`dse
+type: image
+label: 对比图
+size: small
+images:
+- https://example.com/a.jpg|方案A|传统方案
+- https://example.com/b.jpg|方案B|改进方案
+- https://example.com/c.jpg|方案C|最优方案
+\`\`\`
+
+提示：在 card 组件的 HTML 中也可以直接使用 <img> 标签嵌入图片，配合其他内容做图文混排。在其他组件中引用图片时请使用 card 做图文组合。
+
 ===== 使用建议 =====
-1. 在合适的场景自然使用，不要每句话都加组件
-2. 当你需要用户做选择时→用 buttons 或 checklist
-3. 当你需要收集信息时→用 form
-4. 当你需要用户确认时→用 confirm
-5. 当你展示参数让用户调整时→用 slider
-6. 当你展示结构化数据让用户选择时→用 table
-7. 当你生成了可编辑的文本片段时→用 text
-8. 当你展示数据趋势或对比时→用 chart
-9. 当你展示系统架构、流程或层级结构时→用 structure
-10. 可以在一条回复中使用多个组件，它们会各自独立渲染
+1. 优先使用 card 组件！当你的回答包含知识讲解、功能介绍、对比分析、特性总结、优缺点列举、推荐清单、概念解释、技巧分享、步骤说明、工具推荐等展示性内容时，都应使用 card 以卡片化排版提升阅读体验。card 是最核心、最常用的组件
+2. 只有在需要用户交互（选择、填写、确认、调参等）时，才使用对应的交互组件：buttons/checklist（选择）、form（填写）、confirm（确认）、slider（调参）
+3. 展示纯结构化数据让用户选择时→用 table
+4. 展示数据趋势或对比时→用 chart
+5. 展示系统架构、流程时→用 structure
+6. 涉及地理位置、旅行推荐、地点介绍时→用 map
+7. 梳理知识体系、分类关系、内容大纲时→用 mindmap
+8. 需要展示网络图片、截图、照片时→用 image（大图/小图/自定义），也可在 card 中用 <img> 嵌入图片做图文混排
+9. 生成可编辑文本片段时→用 text
+10. 可以在一条回复中混用多个组件，它们会各自独立渲染
 11. 组件之间可以穿插普通文字说明`;
 
 chrome.storage.local.get({

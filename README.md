@@ -8,6 +8,10 @@
 
 | 组件 | 用途 |
 |------|------|
+| **card** | 自定义 HTML 卡片，支持 Lucide 图标、网格布局、CSS 3D 动画 |
+| **map** | 地图卡片，基于 OpenStreetMap 定位标记 |
+| **mindmap** | 思维导图，支持拖拽平移和缩放 |
+| **image** | 图片展示，支持大图/小图/自定义尺寸，点击放大 |
 | **checklist** | 多选清单，勾选后提交 |
 | **form** | 表单，支持文本、下拉、多行输入 |
 | **confirm** | 确认/取消对话框 |
@@ -17,6 +21,22 @@
 | **text** | 可编辑文本框，支持复制和重置 |
 | **chart** | 柱状图/折线图，可切换，自动统计 |
 | **structure** | 可点击结构图，展示架构/流程 |
+
+**card**：
+
+<img width="505" height="707" alt="image" src="https://github.com/user-attachments/assets/57d7ce90-9048-4afd-ae9c-2b4d16899885" />
+
+**map**：
+
+<img width="797" height="492" alt="image" src="https://github.com/user-attachments/assets/0ac55898-14d9-426b-985a-5f10c28b960d" />
+
+**mindmap**：
+
+<img width="786" height="615" alt="image" src="https://github.com/user-attachments/assets/51834895-a49f-4909-8472-eae35c83bb9a" />
+
+**image**：
+
+<img width="802" height="320" alt="image" src="https://github.com/user-attachments/assets/20d79089-0a13-412b-a82d-32f9c12a1730" />
 
 **checklist**:
 

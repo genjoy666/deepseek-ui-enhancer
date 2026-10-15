@@ -90,7 +90,7 @@
 2. 打开 Chrome/Edge，进入 `chrome://extensions/`（Edge 为 `edge://extensions/`）
 3. 打开右上角 **开发者模式**
 4. 点击 **加载已解压的扩展程序**
-5. 选择本项目的 `ds_web` 文件夹
+5. 选择本项目的文件夹
 6. 打开 [DeepSeek](https://chat.deepseek.com/) 即可使用
 
 ## 使用方法
